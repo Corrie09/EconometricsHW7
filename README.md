@@ -18,8 +18,8 @@ assignment7_folder/
 ```
 
 ## Team Members
-Joshua Castillo
-Nikoloz Darsalia 
+Joshua Castillo,
+Nikoloz Darsalia, 
 Corneel Moons 
 
 ## Questions Covered
