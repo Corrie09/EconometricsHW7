@@ -61,7 +61,111 @@ The script will automatically:
 
 ---
 
-## Question 2: Replication of Table 1
+# Question 2: First-Stage and Reduced-Form Estimation (Table 1)
+
+## Requirements
+
+- Python 3.13 or later
+- Required packages:
+  - `pandas>=2.3.3`
+  - `numpy>=2.3.5`
+  - `statsmodels>=0.14.5`
+  - `stargazer>=0.1.4` (optional, for LaTeX tables)
+
+Alternatively, run `uv sync` to install dependencies.
+
+## Dataset
+
+`assignment7.dta`
+
+## How to Run the Code
+
+1. Open `assignment7_q2.ipynb` Jupyter Notebook or `.py` script
+2. Ensure the dataset and script are in the same folder
+3. Execute the notebook/script
+
+## What the Script Does
+
+### 1. Loads the Dataset
+Reads `assignment7.dta` using `pandas.read_stata`
+
+### 2. Restricts the Sample
+Filters data to:
+- Great Britain only (`nireland == 0`)
+- Ages 25–64
+- Birth cohorts aged 14 in years 1935–1965
+
+### 3. Drops Missing Observations
+Removes observations with missing:
+- log earnings (`learn`)
+
+### 4. Constructs Polynomial and Dummy Controls
+
+**Cohort polynomial (quartic) centered at the mean:**
+```python
+y1 = yobirth - yobirth.mean()
+y2 = y1**2
+y3 = y1**3
+y4 = y1**4
+```
+
+**Age polynomial or age dummies depending on the Table 1 column:**
+- **Columns (1) & (4):** no age controls
+- **Columns (2) & (5):** quartic age polynomial (`a1`, `a2`, `a3`, `a4`)
+- **Columns (3) & (6):** full set of age dummies (`C(age)`)
+
+### 5. Runs Weighted Least Squares (WLS) Regressions
+
+Each regression estimates:
+
+```
+dependent_variable ~ drop15 + cohort_controls + age_controls
+```
+
+Where:
+
+**First-stage regressions (Columns 1–3):**
+- **Dependent variable:** age left full-time education (`agelfted`)
+- **Instrument exposure:** `drop15`
+- **Purpose:** test relevance of the instrument
+
+**Reduced-form regressions (Columns 4–6):**
+- **Dependent variable:** log annual earnings (`learn`)
+- **Same controls as first-stage columns**
+- **Purpose:** estimate the overall effect of the instrument on earnings
+
+**Additional specifications:**
+- **Weights:** probability weights `wght`
+- **Clustered standard errors:** clustered at cohort level (`yobirth`)
+
+The function `reg()` ensures alignment of weights and clusters with the observations used in each regression.
+
+### 6. Produces Outputs for Table 1
+
+The script prints full summaries for all six regressions:
+
+#### First Stage (Columns 1–3):
+- **Column 1:** cohort quartic polynomial only
+- **Column 2:** cohort quartic + age quartic polynomial
+- **Column 3:** cohort quartic + age fixed effects
+
+#### Reduced Form (Columns 4–6):
+- **Column 4:** cohort quartic polynomial only
+- **Column 5:** cohort quartic + age quartic polynomial
+- **Column 6:** cohort quartic + age fixed effects
+
+Each output includes:
+- Coefficient estimates
+- Cluster-robust standard errors
+- t-statistics, p-values
+
+Finally, the script builds a clean summary table with:
+- Model names
+- `drop15` coefficient estimates
+- Standard errors
+
+This table mirrors Table 1 from Oreopoulos (2006) for Great Britain.
+
 
 ## Question 3: RD-IV Estimation (Table 2)
 
