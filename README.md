@@ -12,7 +12,7 @@ assignment7_folder/
 ├── EconometricsHW7.pdf
 ├── assignment7_q1.do
 ├── assignment7_q2.do
-├── assignment7_q3.do
+├── assignment7_q3.ipynb
 ├── assignment7.dta
 └── README.md
 ```
@@ -64,4 +64,74 @@ The script will automatically:
 ## Question 2: Replication of Table 1
 
 ## Question 3: RD-IV Estimation (Table 2)
+
+### Requirements
+
+- Python 3.9 or later
+- "pandas>=2.3.3"
+- "numpy>=2.3.5"
+- "linearmodels>=7.0"
+- "statsmodels>=0.14.5"
+
+or run uv sync
+
+### Dataset: `assignment7.dta`
+
+
+
+### How to Run the Code
+1. Open assignment7_q3.ipynb Jupyter Notebook file
+2. The dataset and Notebook file should be in the same folder
+
+
+### What the Script Does
+1. Loads the dataset (Reads assignment7.dta using pandas.read_stata)
+2. Restricts the sample to:
+    Great Britain only (nireland == 0)
+    Ages 25–64
+    Birth cohorts aged 14 in years 1935–1965
+3. Drops observations with missing:
+    log earnings (learn)
+    age left full-time education (agelfted)
+    instrument (drop15)
+4. Constructs the RD specification
+    The code generates:
+        Cohort polynomial (quartic) centered at the mean:
+            cc, cc2, cc3, cc4
+        Age polynomial or age dummies depending on the Table 2 column:
+            Column (4): no age controls
+            Column (5): quartic age polynomial
+            Column (6): full set of age dummies
+    These match the structure of Table 2 in Oreopoulos (2006).
+5. Runs IV regressions (2SLS)
+    Each regression estimates:
+        learn=β⋅agelfted+f(cohort)+controls
+    where:
+        Endogenous regressor: agelfted
+        Instrument: drop15 (indicator for exposure to the post-1947 reform)
+        Weights: probability weights wght
+        Clustered standard errors: clustered at the cohort level
+    The script uses:
+        from linearmodels.iv import IV2SLS
+    to estimate the 2SLS regressions with cluster-robust inference.
+6. Produces outputs for Table 2
+    The script prints three model summaries:
+        Table 2, Column (4):
+            Quartic cohort controls
+            No age controls
+        Table 2, Column (5):
+            Quartic cohort controls
+            Quartic age controls
+        Table 2, Column (6):
+            Quartic cohort controls
+            Full set of age dummies
+    Each output includes:
+        Coefficient estimates
+        Standard errors (clustered)
+        t-statistics, p-values
+        Number of clusters
+        First-stage summary
+    
+    This mirrors the structure of the published table.
+
 
