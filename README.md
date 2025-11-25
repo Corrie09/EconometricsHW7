@@ -11,7 +11,7 @@ This folder contains all materials required for Assignment 7. It includes:
 assignment7_folder/
 ├── EconometricsHW7.pdf
 ├── assignment7_q1.do
-├── assignment7_q2.do
+├── assignment7_q2.ipynb
 ├── assignment7_q3.ipynb
 ├── assignment7.dta
 └── README.md
