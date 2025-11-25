@@ -67,7 +67,7 @@ The script will automatically:
 
 ### Requirements
 
-- Python 3.9 or later
+- `requires-python = ">=3.13"`
 - Required packages:
   - `pandas>=2.3.3`
   - `numpy>=2.3.5`
